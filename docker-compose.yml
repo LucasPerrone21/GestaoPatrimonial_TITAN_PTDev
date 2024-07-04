@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  db:
+    image: postgres
+    container_name: postgres-container
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - "./dockerModules/postgres:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
