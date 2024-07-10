@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
+  id       String    @id @default(cuid())
   email    String    @unique
   name     String
   password String
@@ -30,7 +30,7 @@ model Demands {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   User        User?    @relation(fields: [userId], references: [id])
-  userId      Int?
+  userId      String?
   status      String
   feedback    String?
 }

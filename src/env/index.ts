@@ -6,6 +6,7 @@ console.log(typeof process.env.APP_PORT)
 const envSchema = z.object({
   DATABASE_URL: z.string(),
   APP_PORT: z.string().default('8000'),
+  APP_SECRET: z.string(),
 })
 
 export const env = envSchema.parse(process.env)
