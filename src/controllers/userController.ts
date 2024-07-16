@@ -56,13 +56,44 @@ class UserController {
         return reply.status(400).send({ error: 'Email ou senha incorretos!' })
       }
 
-      const token = jwt.sign({ id: user.id }, env.APP_SECRET, {expiresIn: '1h'})
+      const token = jwt.sign({ id: user.email }, env.APP_SECRET, {
+        expiresIn: '1h',
+      })
       user.token = token
-      await database.user.update({where: { id: user.id }, data: { token }})
+      await database.user.update({ where: { id: user.id }, data: { token } })
       return reply.status(200).send({ token })
-    }
-    catch (error) {
+    } catch (error) {
       return reply.status(500).send({ error: 'Erro ao fazer login!' })
+    }
+  }
+
+  async update(request: FastifyRequest, reply: FastifyReply) {
+    const { name, password, email } = request.body as {
+      email: string
+      name: string
+      password: string
+    }
+    const token = request.headers.authorization?.split(' ')[1]
+
+    const user = await database.user.findFirst({ where: { token } })
+
+    if (!user) {
+      return reply.status(400).send({ error: 'Usuário não encontrado!' })
+    }
+
+    const encrpytedPassword = await bcrypt.hash(password, 10)
+
+    user.name = name
+    user.password = encrpytedPassword
+    user.email = email
+
+    try {
+      await database.user.update({ where: { id: user.id }, data: user })
+      return reply
+        .status(200)
+        .send({ message: 'Usuário atualizado com sucesso!' })
+    } catch (error) {
+      return reply.status(500).send({ error: 'Erro ao atualizar usuário!' })
     }
   }
 }
