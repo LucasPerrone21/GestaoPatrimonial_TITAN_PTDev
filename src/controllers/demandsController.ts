@@ -3,22 +3,6 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import AuthController from './authController'
 
 class DemandController {
-
-    async getId(request: FastifyRequest, reply: FastifyReply) {
-        const token = request.headers.authorization?.split(' ')[1]
-        try {
-            const user = await database.user.findFirst({where: {token} })
-
-            if (!user) {
-                return reply.status(400).send({ error: 'Usuário não encontrado'})
-            }
-
-            return user.id
-        } catch(error) {
-            return reply.status(500).send({ error: 'Erro com o usuário!' })
-        }
-    }
-
     async createNewDemand (request: FastifyRequest, reply: FastifyReply) {
 
         const token = request.headers.authorization?.split(' ')[1]
