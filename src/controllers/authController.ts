@@ -17,6 +17,7 @@ class AuthController {
       if (!decoded) {
         return reply.status(401).send({ error: 'Token inválido!' })
       }
+
       return true
     } catch (error) {
       return reply.status(401).send({ error: 'Token inválido!' })

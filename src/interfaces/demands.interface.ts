@@ -2,7 +2,7 @@ export interface Demand {
   id: number
   title: string
   description: string
-  userID: number
+  userId: string
   status: string
   feedback: string
 }
