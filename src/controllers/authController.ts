@@ -28,7 +28,7 @@ class AuthController {
     const token = request.headers.authorization?.split(' ')[1]
     try {
       const user = await database.user.findFirst({ where: { token } })
-      return reply.status(200).send({ user })
+      return reply.status(200).send(user)
     } catch (error) {
       return reply.status(500).send({ error: 'Erro ao buscar usuário!' })
     }
