@@ -52,6 +52,7 @@ class DemandController {
                     userId: user.id
                 },
                 select: {
+                    id: true,
                     title: true,
                     description: true,
                     status: true,
@@ -61,9 +62,44 @@ class DemandController {
                 }
             })
 
-            reply.status(201).send(list)
+            return reply.status(201).send(list)
         } catch(error) {
-            reply.status(400).send({error: 'Ocorreu um erro na listagem das demandas'})
+            return reply.status(400).send({error: 'Ocorreu um erro na listagem das demandas'})
+        }
+    }
+
+    async demandsDelete(request: FastifyRequest, reply: FastifyReply) {
+        
+        const token = request.headers.authorization?.split(' ')[1]
+        
+        const user = await database.user.findFirst({where: {token} })
+        
+        if (!user) {
+            return reply.status(400).send({ error: 'Usuário não encontrado'})
+        }
+        
+        const {id, title} = request.body as {
+            id: number
+            title: string
+        }
+
+        if(!id || !title) {
+            return reply.status(400).send({error: 'Preencha os campos corretamente'})
+        }
+
+        try {
+
+            const deleteDemand = await database.demands.delete({
+                where: {
+                    userId: user.id,
+                    id: id,
+                    title: title
+                }
+            })
+            return reply.status(200).send(deleteDemand)
+        } 
+        catch(error) {
+            return reply.status(400).send({ error: 'Demanda não encontrada' })
         }
     }
 }
