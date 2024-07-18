@@ -102,6 +102,44 @@ class DemandController {
             return reply.status(400).send({ error: 'Demanda não encontrada' })
         }
     }
+
+    async demandsUpdate(request: FastifyRequest, reply: FastifyReply) {
+
+        const token = request.headers.authorization?.split(' ')[1]
+        
+        const user = await database.user.findFirst({where: {token} })
+        
+        if (!user) {
+            return reply.status(400).send({ error: 'Usuário não encontrado'})
+        }
+
+        const {id, title, description} = request.body as {
+            id: number
+            title: string
+            description: string
+        }
+
+        if(!id || !title || !description) {
+            return reply.status(400).send({error: 'Preencha os campos corretamente'})
+        }
+
+        try {
+            const update = await database.demands.update({
+                where: {
+                    userId: user.id,
+                    id: id
+                },
+                data: {
+                    title: title,
+                    description: description
+                }
+            })
+            return reply.status(200).send(update)
+        } 
+        catch(error) {
+            return reply.status(400).send({ error: 'Não conseguimos atualizar a demanda'})
+        }
+    }
 }
 
 export default DemandController
