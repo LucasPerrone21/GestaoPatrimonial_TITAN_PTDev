@@ -1,8 +1,9 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import fastify, { FastifyRequest, FastifyReply } from "fastify";
 import database from "../database/database";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { env } from '../env/index'
+import { string } from "zod";
 
 export default class AdminController {
     async adminRegister(request: FastifyRequest, reply: FastifyReply) {
@@ -173,6 +174,52 @@ export default class AdminController {
         } catch(error) {
             console.log(error)
             return reply.status(400).send({error: 'Não foi possível listar as demandas do usuário'})
+        }
+    }
+
+    async adminViewDemandUser(request: FastifyRequest, reply: FastifyReply) {
+
+        console.log('Query Parameters', request.query)
+        const { email, title, id } = request.query as {
+            email?: string;
+            title?: string;
+            id?: string;
+        }
+
+        console.log('Query Parameters', request.query)
+
+        console.log('ID from Query', id)
+
+        const idIsANumber = Number(id)
+
+        if(isNaN(idIsANumber)) {
+            return reply.status(400).send({ error: 'ID inválido!' });
+        }
+
+        console.log('Converted ID:', idIsANumber)
+
+        const userCatch = await database.user.findFirst({where: {email: email}})
+
+        const token = request.headers.authorization?.split(' ')[1]
+
+        const user = await database.user.findFirst({ where: { token } })
+
+        const admin = await database.user.findFirst({where: {token}, select: {admin: true}})
+
+        if (!user) {
+            return reply.status(400).send({ error: 'Usuário não encontrado!' })
+        }
+
+        if (!admin) {
+            return reply.status(400).send({error: 'Usuário sem permissão de administrador'})
+        }
+
+        try {
+            const demand = await database.demands.findFirst({where: {id: idIsANumber, userId: userCatch?.id}})
+            return reply.status(200).send(demand)
+        } catch(error) {
+            console.log(error)
+            return reply.status(400).send({error: 'Não foi possível encontrar a demanda do usuário'})
         }
     }
 }
