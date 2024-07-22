@@ -105,7 +105,7 @@ export default class AdminController {
         user.email = email
 
         const adminValidation = database.user.findFirst({
-            where: {token},
+            where: {id: user.id},
             select: {admin: true}
         })
 
@@ -114,7 +114,7 @@ export default class AdminController {
         }
 
         try {
-            await database.user.update({ where: { id: user.id }, data: user })
+            await database.user.update({ where: { id: user.id }, data: user})
             return reply.status(200).send({ message: 'Usuário atualizado com sucesso!' })
         } catch (error) {
             return reply.status(500).send({ error: 'Erro ao atualizar usuário!' })
@@ -138,7 +138,8 @@ export default class AdminController {
 
         try{
             const adminDeleted = await database.user.delete({where: {id: user.id}})
-            return reply.status(200).send(adminDeleted)
+            console.log('Usuário deletado:' + adminDeleted)
+            return reply.status(200).send({message: 'Administrador deletado com sucesso!'})
         } catch(eeror) {
             return reply.status(400).send({error: 'Erro ao excluir o usuário'})
         }
