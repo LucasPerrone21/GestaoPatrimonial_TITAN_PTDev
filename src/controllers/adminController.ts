@@ -1,4 +1,4 @@
-import fastify, { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyRequest, FastifyReply } from "fastify";
 import database from "../database/database";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -142,6 +142,37 @@ export default class AdminController {
             return reply.status(200).send({message: 'Administrador deletado com sucesso!'})
         } catch(eeror) {
             return reply.status(400).send({error: 'Erro ao excluir o usuário'})
+        }
+    }
+
+    async adminListDemands(request: FastifyRequest, reply: FastifyReply) {
+        const { email, name } = request.query as {
+            email: string
+            name: string
+        }
+
+        const userCatch = await database.user.findFirst({where: {email: email}})
+
+        const token = request.headers.authorization?.split(' ')[1]
+
+        const user = await database.user.findFirst({ where: { token } })
+
+        const admin = await database.user.findFirst({where: {token}, select: {admin: true}})
+
+        if (!user) {
+            return reply.status(400).send({ error: 'Usuário não encontrado!' })
+        }
+
+        if (!admin) {
+            return reply.status(400).send({error: 'Usuário sem permissão de administrador'})
+        }
+
+        try {
+            const demands = await database.demands.findMany({where: {userId: userCatch?.id}})
+            return reply.status(200).send(demands)
+        } catch(error) {
+            console.log(error)
+            return reply.status(400).send({error: 'Não foi possível listar as demandas do usuário'})
         }
     }
 }
