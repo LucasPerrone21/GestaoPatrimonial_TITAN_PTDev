@@ -12,10 +12,9 @@ class DemandController {
             return reply.status(400).send({ error: 'Usuário não encontrado'})
         }
         
-        const {title, description, status} = request.body as {
+        const {title, description} = request.body as {
             title: string
             description: string
-            status: string
         }
 
         if(!title || !description) {
