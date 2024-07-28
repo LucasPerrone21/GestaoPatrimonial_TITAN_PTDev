@@ -333,6 +333,9 @@ var app = (0, import_fastify.default)({
 });
 app.register(userRoutes_default, { prefix: "/users" });
 app.register(demandsRoutes_default, { prefix: "/demands" });
-app.listen({ port: Number(env.APP_PORT) }).then(() => {
+app.listen({ port: Number(env.APP_PORT), host: "0.0.0.0" }).then(() => {
   console.log(`Server is running on port ${env.APP_PORT} \u{1F680}`);
+}).catch((err) => {
+  app.log.error(err);
+  process.exit(1);
 });

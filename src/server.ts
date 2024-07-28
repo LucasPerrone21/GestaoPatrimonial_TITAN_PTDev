@@ -14,6 +14,9 @@ const app = fastify({
 app.register(userRoutes, { prefix: '/users' })
 app.register(demandRoutes, { prefix: '/demands' })
 
-app.listen({ port: Number(env.APP_PORT) }).then(() => {
+app.listen({ port: Number(env.APP_PORT), host: '0.0.0.0' }).then(() => {
   console.log(`Server is running on port ${env.APP_PORT} 🚀`)
+}).catch((err) => {
+  app.log.error(err)
+  process.exit(1)
 })
