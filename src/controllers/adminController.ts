@@ -222,4 +222,5 @@ export default class AdminController {
             return reply.status(400).send({error: 'Não foi possível encontrar a demanda do usuário'})
         }
     }
+
 }
