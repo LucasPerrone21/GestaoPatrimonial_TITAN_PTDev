@@ -10,6 +10,8 @@ async function adminRoutes(fastify: FastifyInstance) {
     fastify.post('/login', adminController.adminLogin)
     fastify.put('/update', adminController.updateAdmin)
     fastify.delete('/delete', adminController.adminDelete)
+    fastify.get('/demands/list', adminController.adminListDemands)
+    fastify.get('/demands/:id', adminController.adminViewDemandUser)
 }
 
 export default adminRoutes
