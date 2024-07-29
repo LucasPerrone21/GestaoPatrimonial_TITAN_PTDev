@@ -96,6 +96,36 @@ class UserController {
       return reply.status(500).send({ error: 'Erro ao atualizar usuário!' })
     }
   }
+
+  async deleteUser(request: FastifyRequest, reply: FastifyReply) {
+    const { email, password } = request.body as {
+      email: string
+      password: string
+    }
+    if (!email || !password) {
+      return reply.status(400).send({ error: 'Preencha todos os campos!' })
+    }
+    const token = request.headers.authorization?.split(' ')[1]
+
+    const user = await database.user.findFirst({ where: { token } })
+    if (!user) {
+      return reply.status(400).send({ error: 'Usuário não encontrado!' })
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if (!passwordMatch) {
+      return reply.status(400).send({ error: 'Email ou senha incorretos!' })
+    }
+
+    try {
+      await database.user.delete({
+        where: { email },
+      })
+      return reply.status(200).send({ message: 'Usuário apagado com sucesso.' })
+    } catch (error) {
+      return reply.status(500).send({ error: 'Erro ao apagar o usuário! ' })
+    }
+  }
 }
 
 export default UserController
