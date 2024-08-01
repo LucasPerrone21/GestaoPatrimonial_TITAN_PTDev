@@ -77,12 +77,9 @@ class DemandController {
             return reply.status(400).send({ error: 'Usuário não encontrado'})
         }
         
-        const {id, title} = request.body as {
-            id: number
-            title: string
-        }
+        const { id } = request.params as { id: number };
 
-        if(!id || !title) {
+        if(!id) {
             return reply.status(400).send({error: 'Preencha os campos corretamente'})
         }
 
@@ -92,7 +89,6 @@ class DemandController {
                 where: {
                     userId: user.id,
                     id: id,
-                    title: title
                 }
             })
             return reply.status(200).send(deleteDemand)

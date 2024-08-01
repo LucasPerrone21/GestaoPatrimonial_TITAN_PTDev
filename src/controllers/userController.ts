@@ -95,6 +95,25 @@ class UserController {
     } catch (error) {
       return reply.status(500).send({ error: 'Erro ao atualizar usuário!' })
     }
+  } 
+
+  async deleteUser(request: FastifyRequest, reply: FastifyReply) {
+    const token = request.headers.authorization?.split(' ')[1]
+
+    const user = await database.user.findFirst({ where: { token } })
+    if (!user) {
+      return reply.status(400).send({ error: 'Usuário não encontrado!' })
+    }
+
+
+    try {
+      await database.user.delete({
+        where: { id: user.id },
+      })
+      return reply.status(200).send({ message: 'Usuário apagado com sucesso.' })
+    } catch (error) {
+      return reply.status(500).send({ error: 'Erro ao apagar o usuário! ' })
+    }
   }
 }
 
