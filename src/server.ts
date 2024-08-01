@@ -16,8 +16,8 @@ app.register(require('@fastify/swagger'), {
   openapi: {
     openapi: '3.0.0',
     info: {
-      title: 'Test swagger',
-      description: 'Testing the Fastify swagger API',
+      title: 'API PATRIMONIO',
+      description: 'Documentação para nossa API de Patrimonio',
       version: '0.1.0',
     },
     servers: [
