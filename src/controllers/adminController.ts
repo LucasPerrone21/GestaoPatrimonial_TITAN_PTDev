@@ -3,6 +3,7 @@ import database from '../database/database'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { env } from '../env/index'
+import { userSchema } from '../validation/schema'
 
 export default class AdminController {
   async adminRegister(request: FastifyRequest, reply: FastifyReply) {
@@ -34,8 +35,10 @@ export default class AdminController {
       password: string
     }
 
-    if (!name || !email || !password) {
-      return reply.status(400).send({ error: 'Preencha todos os campos!' })
+    try {
+      userSchema.parse({ name, email, password })
+    } catch (error) {
+      return reply.status(400).send({ mensage: 'Entrada Inválida' })
     }
 
     const encrpytedPassword = await bcrypt.hash(password, 10)

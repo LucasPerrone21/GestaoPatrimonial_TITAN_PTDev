@@ -1,5 +1,6 @@
 import database from '../database/database'
 import { FastifyRequest, FastifyReply } from 'fastify'
+import { demandSchema } from '../validation/schema'
 
 class DemandController {
   async createNewDemand(request: FastifyRequest, reply: FastifyReply) {
@@ -15,9 +16,12 @@ class DemandController {
       title: string
       description: string
     }
+    const status = 'Avaliando...'
 
-    if (!title || !description) {
-      return reply.status(400).send({ error: 'Preencha todos os campos' })
+    try {
+      demandSchema.parse({ title, description, status })
+    } catch (error) {
+      return reply.status(400).send({ error: 'entrada inválida' })
     }
 
     try {
@@ -26,7 +30,7 @@ class DemandController {
           title,
           description,
           userId: user.id,
-          status: 'Avaliando...',
+          status,
         },
       })
       reply.status(201).send(newDemand)
