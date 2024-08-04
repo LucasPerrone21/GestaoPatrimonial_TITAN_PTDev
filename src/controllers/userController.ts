@@ -3,6 +3,7 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { env } from '../env/index'
+import { userSchema } from '../validation/schema'
 
 class UserController {
   async register(request: FastifyRequest, reply: FastifyReply) {
@@ -12,9 +13,12 @@ class UserController {
       password: string
     }
 
-    if (!name || !email || !password) {
-      return reply.status(400).send({ error: 'Preencha todos os campos!' })
+    try {
+      userSchema.parse({ name, email, password })
+    } catch (error) {
+      return reply.status(400).send({ mensage: 'Entrada Inválida' })
     }
+
     const encrpytedPassword = await bcrypt.hash(password, 10)
 
     try {

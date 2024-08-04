@@ -7,7 +7,7 @@
     "dev": "npx ts-node ./src/server.ts watch --respawn",
     "lint": "eslint src --ext .ts --fix",
     "build": "tsup src"
-
+    
   },
   "keywords": [],
   "author": "",
