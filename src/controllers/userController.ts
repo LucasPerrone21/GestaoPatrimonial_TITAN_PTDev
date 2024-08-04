@@ -95,7 +95,7 @@ class UserController {
     } catch (error) {
       return reply.status(500).send({ error: 'Erro ao atualizar usuário!' })
     }
-  } 
+  }
 
   async deleteUser(request: FastifyRequest, reply: FastifyReply) {
     const token = request.headers.authorization?.split(' ')[1]
@@ -104,7 +104,6 @@ class UserController {
     if (!user) {
       return reply.status(400).send({ error: 'Usuário não encontrado!' })
     }
-
 
     try {
       await database.user.delete({
